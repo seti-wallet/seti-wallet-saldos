@@ -1,4 +1,4 @@
-import { Controller, Get, Logger, Param } from "@nestjs/common";
+import { Controller, Get, InternalServerErrorException, Logger, NotFoundException, Param } from "@nestjs/common";
 import { SaldoService } from "./saldo.service";
 import { SaldoRepository } from "./saldo.repository";
 
@@ -19,9 +19,12 @@ import { SaldoRepository } from "./saldo.repository";
      */
  @Get('/:cuenta')
  async getCustomerByDocument(@Param('cuenta') cuenta: number) {
-   return await this.saldoRepository.getSaldo(cuenta);
- }
-
-
-
-}
+  try{
+   const saldo= await this.saldoRepository.getSaldo(cuenta);
+   if (!saldo){
+    throw new NotFoundException(`No se encontró saldo para el usuario con cuenta: ${cuenta}`); 
+  } 
+  return saldo; 
+} catch (error) { 
+  throw new InternalServerErrorException('Error con la cuenta', error.message); 
+} } }
