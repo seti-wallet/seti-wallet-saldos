@@ -21,10 +21,15 @@ import { SaldoRepository } from "./saldo.repository";
  async getCustomerByDocument(@Param('cuenta') cuenta: number) {
   try{
    const saldo= await this.saldoRepository.getSaldo(cuenta);
-   if (!saldo){
-    throw new NotFoundException(`No se encontró saldo para el usuario con cuenta: ${cuenta}`); 
-  } 
+   
+   //if (!saldo){
+   // throw new NotFoundException(`No se encontró saldo para el usuario con cuenta: ${cuenta}`); 
+  //} 
   return saldo; 
 } catch (error) { 
-  throw new InternalServerErrorException('Error con la cuenta', error.message); 
+  
+  if (error instanceof NotFoundException) { 
+    throw new NotFoundException(error.message); 
+  }
+  //throw new InternalServerErrorException('Error', error.message); 
 } } }

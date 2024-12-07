@@ -32,25 +32,31 @@ export class SaldoRepository {
 
     try {
       const result = await repo.find({
-        where: { cuenta: Number(cuenta) }, select: ["cuenta", "saldo", "fecha"]
+        where: { cuenta: Number(cuenta) }, 
+        select: ["cuenta", "saldo", "fecha"]
 
       });
       
-      if (result.length === 0) { throw new Error(`No se encontró el número de cuenta: ${cuenta}`); }
+      if (result.length === 0) { 
+        throw new NotFoundException(`No se encontró el número de cuenta: ${cuenta}`); }
 
 
       return result;
 
     } catch (error) {
-      Logger.error({
-        method: `${this.MODULE_NAME}.getSaldo`,
-        message: error,
-      });
-      throw new InternalServerErrorException(
-        'Error obteniendo el saldo para la cuenta enviada',
-        error,
-      );
-    }
+      this.logger.error({ 
+        method: `${this.MODULE_NAME}.getSaldo`, 
+        message: error.message, 
+      }); 
+      if (error instanceof NotFoundException) { 
+        throw error; 
+      } 
+
+      throw new InternalServerErrorException( 
+        'Error', 
+        error.message, 
+      ); 
+    } 
   }
 
 
@@ -69,7 +75,7 @@ async getSaldoUser(cuenta: number): Promise<number> {
           message: error, 
         }); 
         throw new InternalServerErrorException( 
-          'Error obteniendo el saldo del usuario', 
+          'Error con la transacción', 
           error,
          ); 
         } 
