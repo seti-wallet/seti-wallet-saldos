@@ -1,6 +1,7 @@
 import { Controller, Get, InternalServerErrorException, Logger, NotFoundException, Param } from "@nestjs/common";
 import { SaldoService } from "./saldo.service";
 import { SaldoRepository } from "./saldo.repository";
+import { SkipThrottle, Throttle } from "@nestjs/throttler";
 
 @Controller('saldo')
   export class SaldoController {
@@ -18,6 +19,8 @@ import { SaldoRepository } from "./saldo.repository";
      * @returns
      */
  @Get('/:cuenta')
+ //@Throttle({ default: { limit: 1, ttl: 60000 } })
+ //@SkipThrottle()
  async getCustomerByDocument(@Param('cuenta') cuenta: number) {
   try{
    const saldo= await this.saldoRepository.getSaldo(cuenta);
